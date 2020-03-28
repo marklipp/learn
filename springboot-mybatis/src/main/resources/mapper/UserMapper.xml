@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yss.springbootmybatis.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="com.yss.springbootmybatis.entity.User">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="AGE" jdbcType="VARCHAR" property="age" />
+  </resultMap>
+
+  <resultMap id="oneMap" extends="BaseResultMap" type="com.yss.springbootmybatis.entity.User">
+    <association property="department" javaType="com.yss.springbootmybatis.entity.Department" >
+      <id column="PID" jdbcType="VARCHAR" property="id" />
+      <result column="PNAME" jdbcType="VARCHAR" property="name" />
+    </association>
+  </resultMap>
+  <select id="oneToOneQuery" parameterType="java.lang.String" resultMap="oneMap">
+    select
+        a.ID, a.NAME, a.AGE, a.DEPARTMENT_ID, b.ID PID, b.NAME PNAME
+    from T_DEMO_USER a ,T_DEMO_DEPARTMENT b
+    where a.DEPARTMENT_ID = b.ID AND a.ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <resultMap id="twoMap" extends="BaseResultMap" type="com.yss.springbootmybatis.entity.User">
+    <association property="department" select="com.yss.springbootmybatis.dao.DepartmentMapper.selectDepartmentById" column="DEPARTMENT_ID">
+    </association>
+  </resultMap>
+  <select id="oneToOneQueryTwo" parameterType="java.lang.String" resultMap="twoMap">
+    select
+        a.ID, a.NAME, a.AGE, a.DEPARTMENT_ID
+    from T_DEMO_USER a
+    where a.ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <!--按需加载-->
+  <select id="selectByDepartmentId" parameterType="java.lang.String" resultType="com.yss.springbootmybatis.entity.User">
+    select ID, NAME, AGE, DEPARTMENT_ID
+    from T_DEMO_USER
+    where DEPARTMENT_ID = #{departmentId,jdbcType=VARCHAR}
+  </select>
+
+
+  <sql id="Base_Column_List">
+    ID, NAME, AGE, DEPARTMENT_ID
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEMO_USER
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from T_DEMO_USER
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from T_DEMO_USER
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yss.springbootmybatis.entity.User">
+    insert into T_DEMO_USER (ID, NAME, AGE, 
+      DEPARTMENT_ID, ROLE_ID)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{age,jdbcType=VARCHAR}, 
+      #{departmentId,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yss.springbootmybatis.entity.User">
+    insert into T_DEMO_USER
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="age != null">
+        AGE,
+      </if>
+      <if test="departmentId != null">
+        DEPARTMENT_ID,
+      </if>
+      <if test="roleId != null">
+        ROLE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentId != null">
+        #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null">
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yss.springbootmybatis.entity.User">
+    update T_DEMO_USER
+    <set>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        AGE = #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentId != null">
+        DEPARTMENT_ID = #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null">
+        ROLE_ID = #{roleId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yss.springbootmybatis.entity.User">
+    update T_DEMO_USER
+    set NAME = #{name,jdbcType=VARCHAR},
+      AGE = #{age,jdbcType=VARCHAR},
+      DEPARTMENT_ID = #{departmentId,jdbcType=VARCHAR},
+      ROLE_ID = #{roleId,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

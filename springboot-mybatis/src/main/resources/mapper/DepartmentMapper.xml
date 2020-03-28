@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yss.springbootmybatis.dao.DepartmentMapper">
+  <resultMap id="BaseResultMap" type="com.yss.springbootmybatis.entity.Department">
+    <id column="DEPARTMENT_ID" jdbcType="VARCHAR" property="id" />
+    <result column="DEPARTMENT_NAME" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, NAME
+  </sql>
+
+  <resultMap id="BaseResultMap2" type="com.yss.springbootmybatis.entity.Department" extends="BaseResultMap">
+    <collection property="users" ofType="com.yss.springbootmybatis.entity.User">
+      <id column="ID" jdbcType="VARCHAR" property="id" />
+      <result column="NAME" jdbcType="VARCHAR" property="name" />
+      <result column="AGE" jdbcType="VARCHAR" property="age" />
+    </collection>
+  </resultMap>
+  <select id="oneToManyQuery" parameterType="java.lang.String" resultMap="BaseResultMap2">
+    select a.ID DEPARTMENT_ID, a.NAME DEPARTMENT_NAME,b.ID, b.NAME, b.AGE
+    from T_DEMO_DEPARTMENT a, T_DEMO_USER b
+    where a.ID = b.DEPARTMENT_ID AND a.ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <!--按需加载-->
+  <resultMap id="BaseResultMap3" type="com.yss.springbootmybatis.entity.Department" extends="BaseResultMap">
+    <collection property="users"
+                ofType="com.yss.springbootmybatis.entity.User"
+                select="com.yss.springbootmybatis.dao.UserMapper.selectByDepartmentId"
+                column="DEPARTMENT_ID" fetchType="lazy">
+    </collection>
+  </resultMap>
+  <select id="oneToManyQueryTwo" parameterType="java.lang.String" resultMap="BaseResultMap3">
+    select a.ID DEPARTMENT_ID, a.NAME DEPARTMENT_NAME
+    from T_DEMO_DEPARTMENT a
+    where a.ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectDepartmentById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select a.ID DEPARTMENT_ID, a.NAME DEPARTMENT_NAME
+    from T_DEMO_DEPARTMENT a
+    where a.ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="returnJaveType" parameterType="java.lang.String" resultType="com.yss.springbootmybatis.entity.Department">
+    select ID, NAME
+    from T_DEMO_DEPARTMENT
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEMO_DEPARTMENT
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from T_DEMO_DEPARTMENT
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yss.springbootmybatis.entity.Department">
+    insert into T_DEMO_DEPARTMENT (ID, NAME)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yss.springbootmybatis.entity.Department">
+    insert into T_DEMO_DEPARTMENT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yss.springbootmybatis.entity.Department">
+    update T_DEMO_DEPARTMENT
+    <set>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yss.springbootmybatis.entity.Department">
+    update T_DEMO_DEPARTMENT
+    set NAME = #{name,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:orcl
+    username: ACSQS201903
+    password: 654321
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+  thymeleaf:
+    cache: false #关闭缓存
+    mode: HTML5 #设置模板类型
+    encoding: utf-8  #设置编码
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  jpa:
+    show-sql: true
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml  #注意：一定要对应mapper映射xml文件的所在路径
+  type-aliases-package: com/yss/springbootmybatis/entity  # 注意：对应实体类的路径
+  configuration:
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false  #false 为按需加载
+
+#logback配置
+logging:
+  file: E:\\springbootlog\\springbootlog.log
+  pattern:
+    level:
+      root: INFO
+      com:
+        yss:
+          springbootmybatis:
+            controller: DEBUG
